@@ -4,30 +4,49 @@
 
 set -e
 
-source ./env.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+cd "${SCRIPT_DIR}" && source ./env.sh && cd -
 
 GITHUB_REPO="OpenXiangShan/bootcamp"
 RELEASE_TAG="25.09.10"
 
-# TODO: maybe use some method to do on-demand downloading
 ASSETS_LIST=(
   "emu-precompile"
   "gem5-precompile"
   "workload"
-  # "emu-result"  # large file, containing emu run logs, used by 03-performance/03-topdown.ipynb
-  # "gem5-result" # large file, containing gem5 run logs, used by 04-gem5/05-spec06.ipynb
+  "emu-perf-result"
+  "emu-spec-topdown-result"
+  "gem5-spec-topdown-result"
 )
 
 mkdir -p ${ASSETS_DIR}
 
-for ASSET in "${ASSETS_LIST[@]}"; do
+function download_asset() {
+  local ASSET=$1
   if [ ! -d "${ASSETS_DIR}/${ASSET}" ]; then
-    echo "Downloading ${ASSET}..."
-    mkdir -p "${ASSETS_DIR}/${ASSET}"
-    curl -Ljo "${ASSETS_DIR}/${ASSET}.tar.zst" "https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ASSET}.tar.zst"
+    if [ ! -f "${ASSETS_DIR}/${ASSET}.tar.zst" ]; then
+      echo "Downloading ${ASSET} from GitHub release..."
+      curl -Ljo "${ASSETS_DIR}/${ASSET}.tar.zst" "https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ASSET}.tar.zst"
+    fi
 
     echo "Extracting ${ASSET}..."
-    tar -I zstd -xf "${ASSETS_DIR}/${ASSET}.tar.zst" -C "${ASSETS_DIR}/${ASSET}"
+    tar -I zstd -xf "${ASSETS_DIR}/${ASSET}.tar.zst" -C "${ASSETS_DIR}"
     rm "${ASSETS_DIR}/${ASSET}.tar.zst"
+  else
+    echo "Asset ${ASSET} already exists, skipping download."
   fi
-done
+}
+
+if [ "$1" != "" ]; then
+  if [[ ! "${ASSETS_LIST[@]}" =~ "$1" ]]; then
+    echo "Error: Asset $1 not found in ASSETS_LIST"
+    exit 1
+  fi
+  download_asset $1
+  exit 0
+else
+  echo "Downloading all assets..."
+  for ASSET in "${ASSETS_LIST[@]}"; do
+    download_asset ${ASSET}
+  done
+fi
