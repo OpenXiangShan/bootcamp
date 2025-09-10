@@ -10,6 +10,3 @@ export GEM5_HOME=${XS_PROJECT_ROOT}/GEM5
 # assets and workdir
 export ASSETS_DIR=${XS_PROJECT_ROOT}/assets
 export WORK_DIR=${XS_PROJECT_ROOT}/work
-
-# migrated from tutorial@rvsc'25, need update
-export READY2RUN_HOME=${ASSETS_DIR}/ready-to-run

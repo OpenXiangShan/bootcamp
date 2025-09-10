@@ -6,12 +6,16 @@ set -e
 
 source ./env.sh
 
-GITHUB_REPO="OpenXiangShan/xs-env" # TODO: use OpenXiangShan/bootcamp
-RELEASE_TAG="rvsc2025-tutorial"    # TODO: use latest release
+GITHUB_REPO="OpenXiangShan/bootcamp"
+RELEASE_TAG="25.09.10"
 
+# TODO: maybe use some method to do on-demand downloading
 ASSETS_LIST=(
-  "ready-to-run"
-  "gem5-data"
+  "emu-precompile"
+  "gem5-precompile"
+  "workload"
+  # "emu-result"  # large file, containing emu run logs, used by 03-performance/03-topdown.ipynb
+  # "gem5-result" # large file, containing gem5 run logs, used by 04-gem5/05-spec06.ipynb
 )
 
 mkdir -p ${ASSETS_DIR}

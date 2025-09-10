@@ -8,9 +8,9 @@ export WORKLOAD=stream_100000
 export CHECKPOINT_INTERVAL=$((50*1000*1000))
 
 # path
-export SIMPOINT_HOME=$WORK_DIR/checkpoint
+export SIMPOINT_HOME=$WORK_DIR/03-performance/01-checkpoint
 
-export PAYLOAD_PATH=$READY2RUN_HOME/07-checkpoint
+export PAYLOAD_PATH=$ASSETS_DIR/workload
 
 export GCPT_PATH=$SIMPOINT_HOME/gcpt
 export LOG_PATH=$SIMPOINT_HOME/logs
