@@ -3,8 +3,9 @@ name: Build code-server Docker Image
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/build-docker.yml'
 
 jobs:
   build-and-push:
