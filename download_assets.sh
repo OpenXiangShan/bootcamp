@@ -19,22 +19,28 @@ ASSETS_LIST=(
   "gem5-spec-topdown-result"
 )
 
+if [ -z "${ASSETS_DIR}" ]; then
+  echo "Error: ASSETS_DIR is not set, source ./env.sh may failed"
+  exit 1
+fi
+
 mkdir -p ${ASSETS_DIR}
 
 function download_asset() {
   local ASSET=$1
-  if [ ! -d "${ASSETS_DIR}/${ASSET}" ]; then
-    if [ ! -f "${ASSETS_DIR}/${ASSET}.tar.zst" ]; then
-      echo "Downloading ${ASSET} from GitHub release..."
-      curl -Ljo "${ASSETS_DIR}/${ASSET}.tar.zst" "https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ASSET}.tar.zst"
-    fi
-
-    echo "Extracting ${ASSET}..."
-    tar -I zstd -xf "${ASSETS_DIR}/${ASSET}.tar.zst" -C "${ASSETS_DIR}"
-    rm "${ASSETS_DIR}/${ASSET}.tar.zst"
-  else
-    echo "Asset ${ASSET} already exists, skipping download."
+  if [ -d "${ASSETS_DIR}/${ASSET}" ]; then
+    echo "Asset folder ${ASSET} already exists, overwrite..."
+    rm -rf "${ASSETS_DIR}/${ASSET}"
   fi
+
+  if [ ! -f "${ASSETS_DIR}/${ASSET}.tar.zst" ]; then
+    echo "Downloading ${ASSET} from GitHub release..."
+    curl -Ljo "${ASSETS_DIR}/${ASSET}.tar.zst" "https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ASSET}.tar.zst"
+  fi
+
+  echo "Extracting ${ASSET}..."
+  tar -I zstd -xf "${ASSETS_DIR}/${ASSET}.tar.zst" -C "${ASSETS_DIR}"
+  # rm "${ASSETS_DIR}/${ASSET}.tar.zst"
 }
 
 if [ "$1" != "" ]; then
