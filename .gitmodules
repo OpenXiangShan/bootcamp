@@ -13,3 +13,6 @@
 [submodule "DRAMsim3"]
 	path = DRAMsim3
 	url = https://github.com/OpenXiangShan/DRAMsim3
+[submodule "gem5_data_proc"]
+	path = gem5_data_proc
+	url = https://github.com/shinezyy/gem5_data_proc.git
