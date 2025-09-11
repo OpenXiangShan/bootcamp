@@ -14,6 +14,7 @@ RUN apt-get update && \
         tree \
         time \
         curl \
+        gawk \
         # build toolchain
         autoconf \
         build-essential \
@@ -23,10 +24,6 @@ RUN apt-get update && \
         bison \
         m4 \
         scons \
-        gcc-11 \
-        gcc \
-        g++ \
-        gcc-riscv64-linux-gnu \
         verilator \
         clang \
         llvm \
@@ -34,9 +31,14 @@ RUN apt-get update && \
         pkg-config \
         python3-pip \
         device-tree-compiler \
+        # install gcc 11 to sync with our server environment
+        gcc-11 \
+        g++-11 \
+        gcc-11-riscv64-linux-gnu \
         # runtime
         openjdk-21-jre \
         # libraries
+        libc6-dev-riscv64-cross \
         libreadline6-dev \
         libsdl2-dev \
         zlib1g \
@@ -62,9 +64,17 @@ RUN curl -L https://repo1.maven.org/maven2/com/lihaoyi/mill-dist/1.0.4/mill-dist
 RUN python3 -m pip install --break-system-packages \
         jupyter \
         notebook \
-        matplotlib
+        # for performance analysis scripts
+        matplotlib \
+        numpy \
+        pandas \
+        scipy
 
-# use gcc-11 and g++-11 as default gcc and g++ for GEM5
+# use gcc-11 to sync with our server environment
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100 && \
+    update-alternatives --install /usr/bin/riscv64-linux-gnu-gcc riscv64-linux-gnu-gcc /usr/bin/riscv64-linux-gnu-gcc-11 100
+
 # also use python3.9-config as default python3-config for GEM5 scons script
 RUN rm /usr/bin/python3-config && \
     ln -s /usr/bin/python3.9-config /usr/bin/python3-config
