@@ -16,3 +16,6 @@
 [submodule "gem5_data_proc"]
 	path = gem5_data_proc
 	url = https://github.com/shinezyy/gem5_data_proc.git
+[submodule "tl-test-new"]
+	path = tl-test-new
+	url = https://github.com/OpenXiangShan/tl-test-new.git
