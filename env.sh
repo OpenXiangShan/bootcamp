@@ -9,6 +9,7 @@ export NOOP_HOME=${XS_PROJECT_ROOT}/XiangShan
 export DRAMSIM3_HOME=${XS_PROJECT_ROOT}/DRAMsim3
 export GEM5_HOME=${XS_PROJECT_ROOT}/GEM5
 export GEM5_DATA_PROC_HOME=${XS_PROJECT_ROOT}/gem5_data_proc
+export TLT_HOME=${XS_PROJECT_ROOT}/tl-test-new
 
 # assets and workdir
 export ASSETS_DIR=${XS_PROJECT_ROOT}/assets
