@@ -34,3 +34,12 @@ function get_asset() {
   fi
   echo "${ASSETS_DIR}/${ASSET}"
 }
+
+# override tail for jupyter-rise
+export _tail=$(which tail)
+function tail() {
+  $_tail "$@" | while read -r line; do
+    echo "$line"
+    sleep 0.01
+  done
+}

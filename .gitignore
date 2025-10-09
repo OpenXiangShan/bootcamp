@@ -1,3 +1,5 @@
 .venv/
 assets/
 work/
+
+.ipynb_checkpoints/
