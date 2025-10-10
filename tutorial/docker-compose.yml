@@ -2,25 +2,41 @@ services:
   xiangshan-bootcamp:
     image: ghcr.io/openxiangshan/bootcamp:tutorial
     container_name: xiangshan-bootcamp
-    network_mode: host
+    networks:
+      - bootcamp-br
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      # - PASSWORD=password #optional
-      # - HASHED_PASSWORD= #optional
-      - SUDO_PASSWORD=password #optional
-      # - SUDO_PASSWORD_HASH= #optional
-      # - PROXY_DOMAIN=code-server.my.domain #optional
-      # - DEFAULT_WORKSPACE=/config/workspace #optional
-      # - PWA_APPNAME=code-server #optional
+      # TODO: remember define these in .env file
+      - PASSWORD
+      - SUDO_PASSWORD_HASH
     volumes:
       - config:/config
-      - ..:/config/workspace # mount parent directory to workspace
-    ports:
-      - 8443:8443 # code-server
-      - 8888:8888 # jupyterlab
+      # NOTE: mount workspace as read-only
+      # NOTE: user should use tutorial_start.sh to create a writable copy
+      - ..:/config/workspace:ro
+      # tutorial_start.sh
+      - ./data:/data
     restart: unless-stopped
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - bootcamp-br
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-config:/config
+      - caddy-data:/data
+
+networks:
+  bootcamp-br:
 
 volumes:
   config:
+  caddy-config:
+  caddy-data:

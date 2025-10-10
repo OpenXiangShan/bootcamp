@@ -1,0 +1,4 @@
+# TODO: remember to configure our domain here
+localhost {
+  reverse_proxy /code-server xiangshan-bootcamp:8443
+}
