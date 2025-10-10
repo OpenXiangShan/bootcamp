@@ -4,8 +4,8 @@ on:
   push:
     branches: [ master ]
     paths:
-      - './tutorial/Dockerfile'
-      - './tutorial/root/**'
+      - 'tutorial/Dockerfile'
+      - 'tutorial/root/**'
       - '.github/workflows/build-docker-tutorial.yml'
 
 jobs:
