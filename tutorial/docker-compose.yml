@@ -11,6 +11,7 @@ services:
       # TODO: remember define these in .env file
       - PASSWORD
       - SUDO_PASSWORD_HASH
+      - JUPYTER_PASSWORD_HASH
     volumes:
       - config:/config
       # NOTE: mount workspace as read-only

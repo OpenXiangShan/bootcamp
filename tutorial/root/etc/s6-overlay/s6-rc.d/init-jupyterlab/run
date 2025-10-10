@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+rm -f ${HOME}/.jupyter/jupyter_lab_config.py
+
+s6-setuidgid abc \
+    jupyter-lab --generate-config
+
+# set password if provided
+if [ -n "${JUPYTER_PASSWORD_HASH}" ]; then
+    echo "c.PasswordIdentityProvider.hashed_password = u'${JUPYTER_PASSWORD_HASH}'" >> ${HOME}/.jupyter/jupyter_lab_config.py
+fi

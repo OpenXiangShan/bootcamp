@@ -3,4 +3,5 @@
 
 s6-setuidgid abc \
     jupyter-lab \
+        --config=${HOME}/.jupyter/jupyter_lab_config.py \
         --notebook-dir=/config/workspace
