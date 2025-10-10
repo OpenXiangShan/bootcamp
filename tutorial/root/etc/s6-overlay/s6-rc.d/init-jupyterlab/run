@@ -6,6 +6,12 @@ rm -f ${HOME}/.jupyter/jupyter_lab_config.py
 s6-setuidgid abc \
     jupyter-lab --generate-config
 
+# allow remote access
+echo "c.ServerApp.ip = '0.0.0.0'" >> ${HOME}/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.open_browser = False" >> ${HOME}/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.port = 8888" >> ${HOME}/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.allow_remote_access = True" >> ${HOME}/.jupyter/jupyter_lab_config.py
+
 # set password if provided
 if [ -n "${JUPYTER_PASSWORD_HASH}" ]; then
     echo "c.PasswordIdentityProvider.hashed_password = u'${JUPYTER_PASSWORD_HASH}'" >> ${HOME}/.jupyter/jupyter_lab_config.py
