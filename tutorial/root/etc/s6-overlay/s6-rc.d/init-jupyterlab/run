@@ -1,18 +1,59 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-rm -f ${HOME}/.jupyter/jupyter_lab_config.py
+# create new demo user for jupyterlab
+useradd -d /config/demo -g abc -G users demo
 
-s6-setuidgid abc \
+mkdir -p /config/.local/share
+chown abc:abc /config/.local/share
+chmod 775 /config/.local/share
+
+mkdir -p /data
+chown abc:abc /data
+
+SOURCE="/config/workspace"
+DEST="/config/demo"
+
+if [ ! -d "${DEST}" ]; then
+    mkdir -p "${DEST}"
+
+    EXCLUDE=(
+        "assets"
+        "tutorial"
+        "work"
+    )
+    declare -A EXCLUDE_MAP=()
+    for ex in "${EXCLUDE[@]}"; do
+        EXCLUDE_MAP["$ex"]=1
+    done
+
+    for entry in "$SOURCE"/*; do
+        [ -e "$entry" ] || continue
+
+        name="$(basename "$entry")"
+
+        if [[ -n "${EXCLUDE_MAP[$name]:-}" ]]; then
+            continue
+        fi
+
+        cp -a --reflink=auto "$entry" "$DEST/"
+    done
+
+    chown demo:abc -R "${DEST}"
+fi
+
+rm -f /config/demo/.jupyter/jupyter_lab_config.py
+
+sudo -u demo \
     jupyter-lab --generate-config
 
 # allow remote access
-echo "c.ServerApp.ip = '0.0.0.0'" >> ${HOME}/.jupyter/jupyter_lab_config.py
-echo "c.ServerApp.open_browser = False" >> ${HOME}/.jupyter/jupyter_lab_config.py
-echo "c.ServerApp.port = 8888" >> ${HOME}/.jupyter/jupyter_lab_config.py
-echo "c.ServerApp.allow_remote_access = True" >> ${HOME}/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.ip = '0.0.0.0'" >> /config/demo/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.open_browser = False" >> /config/demo/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.port = 8888" >> /config/demo/.jupyter/jupyter_lab_config.py
+echo "c.ServerApp.allow_remote_access = True" >> /config/demo/.jupyter/jupyter_lab_config.py
 
 # set password if provided
 if [ -n "${JUPYTER_PASSWORD_HASH}" ]; then
-    echo "c.PasswordIdentityProvider.hashed_password = u'${JUPYTER_PASSWORD_HASH}'" >> ${HOME}/.jupyter/jupyter_lab_config.py
+    echo "c.PasswordIdentityProvider.hashed_password = u'${JUPYTER_PASSWORD_HASH}'" >> /config/demo/.jupyter/jupyter_lab_config.py
 fi
