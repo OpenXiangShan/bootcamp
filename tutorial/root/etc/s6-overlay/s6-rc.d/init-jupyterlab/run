@@ -4,9 +4,12 @@
 # create new demo user for jupyterlab
 useradd -d /config/demo -g abc -G users demo
 
-mkdir -p /config/.local/share
-chown abc:abc /config/.local/share
-chmod 775 /config/.local/share
+mkdir -p /config/.local/share/jupyter
+chown abc:abc -R /config/.local
+chown demo:abc -R /config/.local/share/jupyter
+
+mkdir -p /config/.jupyter
+chown demo:abc -R /config/.jupyter
 
 mkdir -p /data
 chown abc:abc /data
@@ -42,9 +45,8 @@ if [ ! -d "${DEST}" ]; then
     cp -a --reflink=auto "$SOURCE/.git" "$DEST/"
 
     ln -s "$SOURCE/assets" "$DEST/assets"
-
-    chown demo:abc -R "${DEST}"
 fi
+chown demo:abc -R "${DEST}"
 
 rm -f /config/demo/.jupyter/jupyter_lab_config.py
 
