@@ -39,6 +39,10 @@ if [ ! -d "${DEST}" ]; then
         cp -a --reflink=auto "$entry" "$DEST/"
     done
 
+    cp -a --reflink=auto "$SOURCE/.git" "$DEST/"
+
+    ln -s "$SOURCE/assets" "$DEST/assets"
+
     chown demo:abc -R "${DEST}"
 fi
 
