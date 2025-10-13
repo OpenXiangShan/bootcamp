@@ -43,3 +43,12 @@ function tail() {
     sleep 0.01
   done
 }
+
+# override head for jupyuter-rise
+export _head=$(which head)
+function head() {
+  $_head "$@" | while read -r line; do
+    echo "$line"
+    sleep 0.01
+  done
+}
