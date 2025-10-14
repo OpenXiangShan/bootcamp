@@ -34,6 +34,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy-config:/config
       - caddy-data:/data
+    restart: unless-stopped
 
 networks:
   bootcamp-br:
