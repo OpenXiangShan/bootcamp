@@ -52,3 +52,12 @@ function head() {
     sleep 0.01
   done
 }
+
+# output buffer for jupyter-rise
+function outputBuffer() {
+  while read -r line; do
+    echo "$line"
+    sleep 0.01
+  done
+}
+
