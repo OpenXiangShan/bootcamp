@@ -38,7 +38,7 @@ function get_asset() {
 # override tail for jupyter-rise
 export _tail=$(which tail)
 function tail() {
-  $_tail "$@" | while read -r line; do
+  $_tail "$@" | while IFS= read -r line; do
     echo "$line"
     sleep 0.01
   done
@@ -47,7 +47,7 @@ function tail() {
 # override head for jupyuter-rise
 export _head=$(which head)
 function head() {
-  $_head "$@" | while read -r line; do
+  $_head "$@" | while IFS= read -r line; do
     echo "$line"
     sleep 0.01
   done
@@ -55,7 +55,7 @@ function head() {
 
 # output buffer for jupyter-rise
 function outputBuffer() {
-  while read -r line; do
+  while IFS= read -r line; do
     echo "$line"
     sleep 0.01
   done
