@@ -1,4 +1,10 @@
 # TODO: remember to configure our domain here
 localhost {
-  reverse_proxy /code-server xiangshan-bootcamp:8443
+  @root_no_args {
+    path   /
+    query  ""
+  }
+  redir @root_no_args /?ew=true
+
+  reverse_proxy xiangshan-bootcamp:8443
 }
