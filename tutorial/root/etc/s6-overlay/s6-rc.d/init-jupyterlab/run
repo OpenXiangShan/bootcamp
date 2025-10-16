@@ -6,7 +6,15 @@ useradd -d /config/demo -g abc -G users demo
 
 mkdir -p /config/.local/share/jupyter
 chown abc:abc -R /config/.local
-chown demo:abc -R /config/.local/share/jupyter
+find /config/.local -type d -exec chmod 775 {} +
+
+mkdir -p /config/.cache
+chown abc:abc -R /config/.cache
+find /config/.cache -type d -exec chmod 775 {} +
+
+mkdir -p /config/.config
+chown abc:abc -R /config/.config
+find /config/.config -type d -exec chmod 775 {} +
 
 mkdir -p /config/.jupyter
 chown demo:abc -R /config/.jupyter
@@ -47,6 +55,7 @@ if [ ! -d "${DEST}" ]; then
     ln -s "$SOURCE/assets" "$DEST/assets"
 fi
 chown demo:abc -R "${DEST}"
+chmod 755 "${DEST}"
 
 rm -f /config/demo/.jupyter/jupyter_lab_config.py
 
