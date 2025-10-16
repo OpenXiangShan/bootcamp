@@ -61,4 +61,4 @@ echo
 echo "Workspace copied to $DEST, trying to open it in code-server..."
 echo "If you see an error, please open it manually on Menu > File > Open Folder..."
 
-$CODE "$DEST"
+$CODE -r "$DEST"
