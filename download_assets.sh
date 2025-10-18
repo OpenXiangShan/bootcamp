@@ -18,6 +18,9 @@ ASSETS_LIST=(
   "emu-spec-topdown-result"
   "gem5-spec-topdown-result"
   "tltest-precompile"
+  "gem5-spec06-sms"
+  "gem5-spec06-baseline"
+  "gem5-spec06-bop"
 )
 
 if [ -z "${ASSETS_DIR}" ]; then
