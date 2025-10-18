@@ -6,15 +6,23 @@ useradd -d /config/demo -g abc -G users demo
 
 mkdir -p /config/.local/share/jupyter
 chown abc:abc -R /config/.local
-find /config/.local -type d -exec chmod 775 {} +
+find /config/.local -type d -exec chmod g+rwx {} +
+find /config/.local -type f -exec chmod g+rw {} +
 
 mkdir -p /config/.cache
 chown abc:abc -R /config/.cache
-find /config/.cache -type d -exec chmod 775 {} +
+find /config/.cache -type d -exec chmod g+rwx {} +
+find /config/.cache -type f -exec chmod g+rw {} +
 
 mkdir -p /config/.config
 chown abc:abc -R /config/.config
-find /config/.config -type d -exec chmod 775 {} +
+find /config/.config -type d -exec chmod g+rwx {} +
+find /config/.config -type f -exec chmod g+rw {} +
+
+mkdir -p /config/.ipython
+chown abc:abc -R /config/.ipython
+find /config/.ipython -type d -exec chmod g+rwx {} +
+find /config/.ipython -type f -exec chmod g+rw {} +
 
 mkdir -p /config/.jupyter
 chown demo:abc -R /config/.jupyter
