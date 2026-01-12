@@ -1,5 +1,5 @@
 # TODO: remember to configure our domain here
-localhost {
+code.localhost {
   @root_no_args {
     path   /
     query  ""
@@ -7,4 +7,8 @@ localhost {
   redir @root_no_args /?ew=true
 
   reverse_proxy xiangshan-bootcamp:8443
+}
+
+jupyter.localhost {
+  reverse_proxy xiangshan-bootcamp:8888
 }

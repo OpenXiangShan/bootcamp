@@ -1,0 +1,23 @@
+# NOTE: this should be used locally ONLY, do NOT expose to public network directly
+services:
+  xiangshan-bootcamp:
+    image: ghcr.io/openxiangshan/bootcamp:tutorial
+    container_name: xiangshan-bootcamp
+    ports:
+      - 8443:8443 # code-server port
+      - 8888:8888 # jupyter lab port
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=0002
+      - TZ=Etc/UTC
+      # "123456"
+      - SUDO_PASSWORD_HASH=$$6$$z1leZC1bcMGsx.jA$$iY2oRjQG4NU3kBpEGVA7/LrYaHHUOryUm1bGo9GTTOc9qycsFlf7bLzCXg4myYDtpqnrleABmecxdAT3afrsN/
+      - JUPYTER_PASSWORD_HASH=argon2:$$argon2id$$v=19$$m=10240,t=10,p=8$$JgB7ecTnIbD1j9MmHwKzUQ$$U7k0OGitkAxSo25Zw+AT+DBR6VvWXMiicTwhnLTsmAs
+    volumes:
+      - config:/config
+      - ..:/config/workspace
+    restart: unless-stopped
+
+volumes:
+  config:
