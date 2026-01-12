@@ -2,7 +2,6 @@ services:
   xiangshan-bootcamp:
     image: ghcr.io/openxiangshan/bootcamp:latest
     container_name: xiangshan-bootcamp
-    network_mode: host
     environment:
       - PUID=1000
       - PGID=1000
