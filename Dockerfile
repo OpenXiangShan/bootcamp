@@ -64,9 +64,6 @@ RUN python3 -m pip install --break-system-packages \
         scipy
 
 # install extensions for code-server
-# RUN /app/code-server/bin/code-server --install-extension ms-toolsai.jupyter && \
-#     /app/code-server/bin/code-server --install-extension ms-python.python && \
-#     /app/code-server/bin/code-server --install-extension scalameta.metals && \
-#     curl -L https://github.com/Lramseyer/vaporview/releases/download/v1.4.1-beta/vaporview-1.4.0.vsix -o /tmp/vaporview.vsix && \
-#     /app/code-server/bin/code-server --install-extension /tmp/vaporview.vsix && \
-#     rm /tmp/vaporview.vsix
+RUN /app/code-server/bin/code-server --install-extension ms-python.python && \
+    /app/code-server/bin/code-server --install-extension ms-toolsai.jupyter && \
+    /app/code-server/bin/code-server --install-extension scalameta.metals
