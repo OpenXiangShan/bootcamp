@@ -66,4 +66,5 @@ RUN python3 -m pip install --break-system-packages \
 # install extensions for code-server
 RUN /app/code-server/bin/code-server --install-extension ms-python.python && \
     /app/code-server/bin/code-server --install-extension ms-toolsai.jupyter && \
-    /app/code-server/bin/code-server --install-extension scalameta.metals
+    /app/code-server/bin/code-server --install-extension scalameta.metals && \
+    /app/code-server/bin/code-server --install-extension lramseyer.vaporview
