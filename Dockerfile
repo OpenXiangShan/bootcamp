@@ -1,11 +1,6 @@
 # official codercom/code-server is based on debian:bookworm, but we prefer ubuntu
 FROM lscr.io/linuxserver/code-server:4.103.2
 
-# we need python3.9 for GEM5, we can get it from deadsnakes/ppa
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa
-
 # install dependencies for XiangShan
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -31,10 +26,9 @@ RUN apt-get update && \
         pkg-config \
         python3-pip \
         device-tree-compiler \
-        # install gcc 11 to sync with our server environment
-        gcc-11 \
-        g++-11 \
-        gcc-11-riscv64-linux-gnu \
+        gcc \
+        g++ \
+        gcc-riscv64-linux-gnu \
         # runtime
         openjdk-21-jre \
         # libraries
@@ -52,7 +46,6 @@ RUN apt-get update && \
         libprotoc-dev \
         libgoogle-perftools-dev \
         libboost-all-dev \
-        python3.9-dev \
         && \
     apt-get clean
 
@@ -69,15 +62,6 @@ RUN python3 -m pip install --break-system-packages \
         numpy \
         pandas \
         scipy
-
-# use gcc-11 to sync with our server environment
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100 && \
-    update-alternatives --install /usr/bin/riscv64-linux-gnu-gcc riscv64-linux-gnu-gcc /usr/bin/riscv64-linux-gnu-gcc-11 100
-
-# also use python3.9-config as default python3-config for GEM5 scons script
-RUN rm /usr/bin/python3-config && \
-    ln -s /usr/bin/python3.9-config /usr/bin/python3-config
 
 # install extensions for code-server
 # RUN /app/code-server/bin/code-server --install-extension ms-toolsai.jupyter && \
