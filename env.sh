@@ -17,9 +17,15 @@ export WORK_DIR=${XS_PROJECT_ROOT}/work
 
 function get_asset() {
   local ASSET=$1
+  local BUILT=$2
   local FOLDER=${ASSET%%/*}
   local FILE=
   [[ "$ASSET" == */* ]] && FILE=${ASSET#*/}
+
+  if [ -n "${BUILT}" ] && [ -e "${BUILT}" ]; then
+    echo "${BUILT}"
+    return
+  fi
 
   if [ -e "${ASSETS_DIR}/${ASSET}" ]; then
     echo "${ASSETS_DIR}/${ASSET}"
