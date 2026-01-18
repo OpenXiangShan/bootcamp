@@ -60,8 +60,9 @@ if [ ! -d "${DEST}" ]; then
 
     cp -a --reflink=auto "$SOURCE/.git" "$DEST/"
 
+    mkdir -p "$DEST/tutorial/"
     find "$SOURCE/tutorial/" -maxdepth 1 -type f -name "*.ipynb" | while read -r notebook; do
-        cp -a --reflink=auto "$notebook" "$DEST/"
+        cp -a --reflink=auto "$notebook" "$DEST/tutorial/"
     done
 
     ln -s "$SOURCE/assets" "$DEST/assets"
