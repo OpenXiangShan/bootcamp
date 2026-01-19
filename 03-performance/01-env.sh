@@ -1,7 +1,7 @@
 # This script will setup XiangShan environment variables for checkpoint
 # See 01-checkpoint.ipynb
 
-cd .. && source env.sh && cd - >/dev/null
+source ../env.sh
 
 # constant
 export WORKLOAD=stream_100000

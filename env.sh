@@ -1,6 +1,6 @@
 set -e
 
-export XS_PROJECT_ROOT=$(pwd)
+export XS_PROJECT_ROOT=$(dirname $(realpath ${BASH_SOURCE[0]:-$0}))
 
 # submodule
 export NEMU_HOME=${XS_PROJECT_ROOT}/NEMU
