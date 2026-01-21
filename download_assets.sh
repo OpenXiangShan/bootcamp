@@ -10,7 +10,7 @@ source "${SCRIPT_DIR}/env.sh"
 GITHUB_REPO="OpenXiangShan/bootcamp"
 RELEASE_TAG="25.09.10"
 
-# Format: "name sha256"; leave hash empty until filled.
+# "name sha256"
 ASSETS_LIST=(
   "emu-precompile ab9363b943ea584c30acb6a4ce821cb4ff1473e0125c9f7f0964dc5682c9485c"
   "gem5-precompile 6235905e50efe203f8cc13434fdcb898447f79715cb3e9045af30f9521e41aa8"
@@ -41,35 +41,40 @@ function download_asset() {
     exit 1
   fi
 
+  echo "Processing asset ${ASSET}..."
+
   if [ -d "${ASSETS_DIR}/${ASSET}" ]; then
-    echo "Asset folder ${ASSET} already exists, overwrite..."
+    echo "  -> Removing existing directory..."
     rm -rf "${ASSETS_DIR}/${ASSET}"
   fi
 
   if [ -f "${ASSET_FILE}" ]; then
-    echo "Verifying existing ${ASSET_FILE}..."
+    echo "  -> Verifying existing ${ASSET}.tar.zst..."
     local CURRENT_HASH
     CURRENT_HASH=$(sha256sum "${ASSET_FILE}" | awk '{print $1}')
     if [ "${CURRENT_HASH}" != "${EXPECTED_HASH}" ]; then
-      echo "Hash mismatch for ${ASSET}, redownloading..."
+      echo "    ->  Hash mismatch for ${ASSET}, redownload..."
       rm -f "${ASSET_FILE}"
+    else
+      echo "    -> Pass."
     fi
   fi
 
   if [ ! -f "${ASSET_FILE}" ]; then
-    echo "Downloading ${ASSET} from GitHub release..."
+    echo "  -> Downloading from GitHub release..."
     curl -Ljo "${ASSET_FILE}" "https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ASSET}.tar.zst"
 
-    echo "Verifying downloaded ${ASSET_FILE}..."
+    echo "  -> Verifying downloaded ${ASSET}.tar.zst..."
     local DOWNLOADED_HASH
     DOWNLOADED_HASH=$(sha256sum "${ASSET_FILE}" | awk '{print $1}')
     if [ "${DOWNLOADED_HASH}" != "${EXPECTED_HASH}" ]; then
       echo "Error: sha256 mismatch for ${ASSET} after download" >&2
       exit 1
     fi
+    echo "    -> Pass."
   fi
 
-  echo "Extracting ${ASSET}..."
+  echo "  -> Extracting..."
   tar -I zstd -xf "${ASSET_FILE}" -C "${ASSETS_DIR}"
   # rm "${ASSETS_DIR}/${ASSET}.tar.zst"
 }
