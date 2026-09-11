@@ -18,8 +18,24 @@ This bootcamp teaches you how to build, run, and experiment with the XiangShan o
 
 - Install Docker & Docker compose.
 - Run `docker-compose up -d` to start the code-server container.
-  - Refer to [linuxserver/docker-code-server](https://github.com/linuxserver/docker-code-server#usage) for description of environment variables.
 - Access code-server at `http://localhost:8443` (default no password).
+
+#### Enviroment variables
+
+Basically inherited from [linuxserver/code-server](https://github.com/linuxserver/docker-code-server#usage)
+
+| Env | Default | Description |
+| --- | ------- | ----------- |
+| `PUID` | `1000` | uid in docker |
+| `PGID` | `1000` | gid in docker |
+| `TZ` | `Etc/UTC` | Timezone in docker |
+| (`HASHED_`)`PASSWORD` | unset | (hashed) password for code-server, no auth if leave empty, refer to [official doc](https://github.com/coder/code-server/blob/main/docs/FAQ.md#can-i-store-my-password-hashed) to generate hash |
+| `SUDO_PASSWORD`(`_HASH`) | `password` | (hashed) password for `sudo`, use `openssl passwd -6 <password>` to generate hash |
+| `PROXY_DOMAIN` | unset | Refer to [official doc](https://github.com/coder/code-server/blob/main/docs/guide.md#using-a-subdomain) |
+| `DEFAULT_WORKSPACE` | unset | Path of default workspace opened in code-server |
+| `PWA_APPNAME` | unset | Name of [PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps) app |
+
+Note: if both hashed and plain password is set, the hashed one will take effect.
 
 ## Assets
 
