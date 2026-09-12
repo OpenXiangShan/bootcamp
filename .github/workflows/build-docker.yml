@@ -1,48 +1,174 @@
-name: Build code-server Docker Image
+name: Build Docker Image
 
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'Dockerfile'
-      - '.github/workflows/build-docker.yml'
+  pull_request:
+    branches: [ master ]
+
+concurrency:
+  group: build-docker-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XS_ENV_VERSION: fe437b5719533ea52295e192bae0a3b40ee203f7
+  BASE_IMAGE_VERSION: 4.137.0
 
 jobs:
-  build-and-push:
+  changes:
+    name: Changes Detection
+    permissions:
+      contents: read
+      pull-requests: read
+    runs-on: ubuntu-latest
+    outputs:
+      latest: ${{ steps.filter.outputs.latest }}
+      tutorial: ${{ steps.filter.outputs.tutorial }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: .github/filters.yaml
+
+  build:
+    needs: changes
+    name: Build docker image
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    services:
+      registry:
+        image: registry:3
+        ports:
+          - 5000:5000
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Docker metadata
-        uses: docker/metadata-action@v5
-        id: metadata
+      - name: Normalize image owner
+        id: image-owner
+        run: echo "value=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT" # make sure lowercase
+
+      - name: Checkout xs-env
+        if: ${{ needs.changes.outputs.latest == 'true' }}
+        uses: actions/checkout@v4
         with:
-          images: |
-            ghcr.io/${{ github.repository_owner }}/bootcamp
-          tags: |
-            latest
-          labels: |
-            maintainer=${{ github.repository_owner }}
+          repository: OpenXiangShan/xs-env
+          ref: ${{ env.XS_ENV_VERSION }}
+          path: xs-env
 
-      - name: Set up Docker Buildx
+      - name: Set up docker buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to ghcr.io
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      # Build xs-env image with BASE_IMAGE=lscr.io/linuxserver/code-server as base-env.
+      # We don't use coderdotcom/code-server as base-env because it is based on debian, but we prefer ubuntu.
+      - name: Set up base-env metadata
+        if: ${{ needs.changes.outputs.latest == 'true' }}
+        uses: docker/metadata-action@v5
+        id: metadata-base
+        with:
+          images: |
+            localhost:5000/bootcamp
+          tags: |
+            base-env
+          labels: |
+            maintainer=${{ github.repository_owner }}
+
+      - name: Build base-env image
+        if: ${{ needs.changes.outputs.latest == 'true' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: xs-env
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.metadata-base.outputs.tags }}
+          labels: ${{ steps.metadata-base.outputs.labels }}
+          cache-from: type=gha,scope=base-env
+          cache-to: type=gha,mode=max,scope=base-env,ignore-error=true
+          build-args: |
+            BASE_IMAGE=lscr.io/linuxserver/code-server:${{ env.BASE_IMAGE_VERSION }}
+            SLIM=false
+
+      # Then build the 'latest' image on top of 'base-env' image,
+      # for code-server extension & jupyter etc..
+      - name: Set up latest metadata
+        if: ${{ needs.changes.outputs.latest == 'true' }}
+        uses: docker/metadata-action@v5
+        id: metadata-latest
+        with:
+          images: |
+            localhost:5000/bootcamp
+          tags: |
+            latest
+          labels: |
+            maintainer=${{ github.repository_owner }}
+
+      - name: Build latest image
+        if: ${{ needs.changes.outputs.latest == 'true' }}
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64
+          push: true
+          tags: ${{ steps.metadata-latest.outputs.tags }}
+          labels: ${{ steps.metadata-latest.outputs.labels }}
+          cache-from: type=gha,scope=latest
+          cache-to: type=gha,mode=max,scope=latest,ignore-error=true
+          build-args: |
+            BASE_IMAGE=localhost:5000/bootcamp:base-env
+
+      # Handle local registry and ghcr.io synchronization
+      - name: Push latest image to ghcr.io if built
+        if: ${{ needs.changes.outputs.latest == 'true' && github.ref == 'refs/heads/master' }}
+        run: |
+          for tag in base-env latest; do
+            docker pull localhost:5000/bootcamp:${tag}
+            docker tag localhost:5000/bootcamp:${tag} ghcr.io/${{ steps.image-owner.outputs.value }}/bootcamp:${tag}
+            docker push ghcr.io/${{ steps.image-owner.outputs.value }}/bootcamp:${tag}
+          done
+
+      - name: Pull latest image if not built
+        if: ${{ needs.changes.outputs.latest != 'true' && needs.changes.outputs.tutorial == 'true' }}
+        run: |
+          docker pull ghcr.io/${{ steps.image-owner.outputs.value }}/bootcamp:latest
+          docker tag ghcr.io/${{ steps.image-owner.outputs.value }}/bootcamp:latest localhost:5000/bootcamp:latest
+          docker push localhost:5000/bootcamp:latest
+
+      # Then build the 'tutorial' image on top of 'latest' image,
+      # for jupyterlab etc. used on-site.
+      - name: Set up tutorial metadata
+        if: ${{ needs.changes.outputs.latest == 'true' || needs.changes.outputs.tutorial == 'true' }}
+        uses: docker/metadata-action@v5
+        id: metadata-tutorial
+        with:
+          images: |
+            ghcr.io/${{ steps.image-owner.outputs.value }}/bootcamp
+          tags: |
+            tutorial
+          labels: |
+            maintainer=${{ github.repository_owner }}
+
+      - name: Build tutorial image
+        if: ${{ needs.changes.outputs.latest == 'true' || needs.changes.outputs.tutorial == 'true' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: tutorial
+          platforms: linux/amd64
           push: ${{ github.ref == 'refs/heads/master' }}
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
+          tags: ${{ steps.metadata-tutorial.outputs.tags }}
+          labels: ${{ steps.metadata-tutorial.outputs.labels }}
+          cache-from: type=gha,scope=tutorial
+          cache-to: type=gha,mode=max,scope=tutorial,ignore-error=true
+          build-args: |
+            BASE_IMAGE=localhost:5000/bootcamp:latest

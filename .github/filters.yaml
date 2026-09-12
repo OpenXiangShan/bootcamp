@@ -1,0 +1,8 @@
+latest:
+  - ".github/filters.yaml"
+  - ".github/workflows/build-docker.yml"
+  - "Dockerfile"
+
+tutorial:
+  - "tutorial/Dockerfile"
+  - "tutorial/root/**"

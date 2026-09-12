@@ -1,60 +1,18 @@
-# official codercom/code-server is based on debian:bookworm, but we prefer ubuntu
-FROM lscr.io/linuxserver/code-server:4.103.2
+ARG BASE_IMAGE=ghcr.io/openxiangshan/bootcamp:base-env
+FROM ${BASE_IMAGE}
 
-# install dependencies for XiangShan
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        # tools
-        git \
-        tree \
-        time \
-        curl \
-        gawk \
-        # build toolchain
-        autoconf \
-        build-essential \
-        make \
-        cmake \
-        flex \
-        bison \
-        m4 \
-        scons \
-        verilator \
-        clang \
-        llvm \
-        mold \
-        pkg-config \
-        python3-pip \
-        device-tree-compiler \
-        gcc \
-        g++ \
-        gcc-riscv64-linux-gnu \
-        # runtime
-        openjdk-21-jre \
-        # libraries
-        libc6-dev-riscv64-cross \
-        libreadline6-dev \
-        libsdl2-dev \
-        zlib1g \
-        zlib1g-dev \
-        sqlite3 \
-        libsqlite3-dev \
-        zstd \
-        libzstd-dev \
-        protobuf-compiler \
-        libprotobuf-dev \
-        libprotoc-dev \
-        libgoogle-perftools-dev \
-        libboost-all-dev \
-        && \
-    apt-get clean
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt update && \
+    apt install -y --no-install-recommends \
+        python3-pip
 
-# install mill
-RUN curl -L https://repo1.maven.org/maven2/com/lihaoyi/mill-dist/1.0.4/mill-dist-1.0.4-mill.sh -o /usr/bin/mill && \
-    chmod +x /usr/bin/mill
-
-# install jupyter
-RUN python3 -m pip install --break-system-packages \
+# install jupyter etc.
+# keep python3-psutil managed by apt (installed in xs-env)
+RUN python3 -m pip install \
+        --no-cache-dir \
+        --break-system-packages \
+        --ignore-installed psutil \
         jupyter \
         notebook \
         # for performance analysis scripts
