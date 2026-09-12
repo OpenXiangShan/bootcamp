@@ -28,3 +28,6 @@ RUN mkdir -p /config/extensions && \
     /app/code-server/bin/code-server --extensions-dir /config/extensions --install-extension scalameta.metals && \
     /app/code-server/bin/code-server --extensions-dir /config/extensions --install-extension lramseyer.vaporview && \
     /app/code-server/bin/code-server --extensions-dir /config/extensions --install-extension qwtel.sqlite-viewer
+
+# Clear CMD from xs-env
+CMD []
