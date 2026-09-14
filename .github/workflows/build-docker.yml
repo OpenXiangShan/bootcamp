@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  XS_ENV_VERSION: fe437b5719533ea52295e192bae0a3b40ee203f7
+  XS_ENV_VERSION: 978a9655109d04cbd0a9c8346ee50b73bac4565d
   BASE_IMAGE_VERSION: 4.137.0
 
 jobs:
