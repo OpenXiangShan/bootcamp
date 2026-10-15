@@ -8,20 +8,16 @@ SCRIPT_DIR=$(dirname $(realpath ${BASH_SOURCE[0]:-$0}))
 source "${SCRIPT_DIR}/env.sh"
 
 GITHUB_REPO="OpenXiangShan/bootcamp"
-RELEASE_TAG="25.09.10"
+RELEASE_TAG="26.10.15"
 
 # "name sha256"
 ASSETS_LIST=(
   "emu-precompile dbb0ed3a2bfa5dac0da863f3629c79fac4dd63fac59533c834af7eb45895075f"
-  "gem5-precompile 6235905e50efe203f8cc13434fdcb898447f79715cb3e9045af30f9521e41aa8"
-  "workload a3a0ccb405fd6eb5c4affc254d91ea07bffee7ac7b651d7ff8c84b13be13a8f5"
+  "gem5-precompile 4aa0f86a93d2877fdc405594c04af8a2f2bd303004fabc97d25e1dcc93b5303e"
+  "workload e5881031670c6418d760dad54300fd71b5247bd4bfcf2b162e5cc95307094555"
   "emu-perf-result b43e83cca9d36380afdc0e739df2d0705834fb61311f986bf802fc8a455c1ab8"
   "emu-spec-topdown-result 8403e64d1cde01252d1ac20a91bb38d8ca06e60dea57e0953eac3fddcc1851b2"
-  "gem5-spec-topdown-result 21a1b1617e4fa01e1443352eec17fd88e35f94d69d5ce44b6722f855ba55e710"
   "tltest-precompile 1a41b84ba29be9bf0ae7388747686a11bd285624676be505f1002a4e84e33068"
-  "gem5-spec06-sms 8da0e4ab1d9caec3452adb87bd499240873558c758a5534982ab8352fb432da0"
-  "gem5-spec06-baseline 5411b89e0ee3f13900f8154e242a4c449dbe3a22a20631bdd8e21553530daeb4"
-  "gem5-spec06-bop 35a982af4b80a92b64f77a33e263cf774611068ac40fd033e4a02b1877c04c4a"
 )
 
 if [ -z "${ASSETS_DIR}" ]; then

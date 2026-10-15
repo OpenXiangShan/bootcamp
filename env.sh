@@ -17,7 +17,7 @@ export WORK_DIR=${XS_PROJECT_ROOT}/work
 
 function get_asset() {
   local ASSET=$1
-  local BUILT=$2
+  local BUILT=${2:-}
   local FOLDER=${ASSET%%/*}
   local FILE=
   [[ "$ASSET" == */* ]] && FILE=${ASSET#*/}
