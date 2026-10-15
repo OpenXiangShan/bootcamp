@@ -14,7 +14,8 @@ RUN python3 -m pip install \
         numpy \
         pandas \
         scipy \
-        tqdm
+        tqdm \
+        scons==4.5.2
 
 # install extensions for code-server
 RUN mkdir -p /config/extensions && \
