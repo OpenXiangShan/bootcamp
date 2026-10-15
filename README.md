@@ -48,11 +48,10 @@ You can run `download_assets.sh <asset name>` to download/extract necessary asse
 Please note that these assets are large files (several GBs after extraction), please make sure you have a stable network connection and enough disk space.
 
 - emu-precompile: Pre-built XiangShan binaries you can directly run emulation with. And pre-built NEMU shared library for difftest.
-- gem5-precompile: Pre-built NEMU shared library for difftest.
-- workload: Workloads, coremark, hello world, etc..
+- gem5-precompile: OpenXiangShan/GEM5 `gem5.fast`, DRAMSim3 shared library, and the matching NEMU difftest reference.
+- workload: Workloads including coremark, hello world, memcpy, etc..
 - emu-perf-result: XiangShan emulation results, including performance metrics and logs.
 - emu-spec-topdown-result: XiangShan emulation results when running SPEC CPU2006 checkpoints, including top-down performance metrics and logs.
-- gem5-spec-topdown-result: GEM5 simulation results when running SPEC CPU2006 checkpoints, including top-down performance metrics and logs.
 
 Our notebook supports download required assets automatically, you can just run the notebook directly.
 

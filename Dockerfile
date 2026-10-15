@@ -13,7 +13,8 @@ RUN python3 -m pip install \
         matplotlib \
         numpy \
         pandas \
-        scipy
+        scipy \
+        tqdm
 
 # install extensions for code-server
 RUN mkdir -p /config/extensions && \
