@@ -13,7 +13,7 @@ RELEASE_TAG="26.10.15"
 # "name sha256"
 ASSETS_LIST=(
   "emu-precompile dbb0ed3a2bfa5dac0da863f3629c79fac4dd63fac59533c834af7eb45895075f"
-  "gem5-precompile 4aa0f86a93d2877fdc405594c04af8a2f2bd303004fabc97d25e1dcc93b5303e"
+  "gem5-precompile 086a09619b0f6ce1bf52dd5af84c329047033e287cdc1ede09a82179d729df7c"
   "workload e5881031670c6418d760dad54300fd71b5247bd4bfcf2b162e5cc95307094555"
   "emu-perf-result b43e83cca9d36380afdc0e739df2d0705834fb61311f986bf802fc8a455c1ab8"
   "emu-spec-topdown-result 8403e64d1cde01252d1ac20a91bb38d8ca06e60dea57e0953eac3fddcc1851b2"
