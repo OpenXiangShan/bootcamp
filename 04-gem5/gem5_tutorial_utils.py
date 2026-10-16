@@ -558,7 +558,7 @@ def load_gap_frame(
     start_cycle: int | None = None,
     end_cycle: int | None = None,
 ) -> pd.DataFrame:
-    """Return load-only execute inner-gap and commit inter-gap samples."""
+    """Return load-only execution latency samples."""
     frame = lifetime_frame(
         db_path,
         start_pc=start_pc,
@@ -572,16 +572,13 @@ def load_gap_frame(
 
     frame["opcode"] = frame["DisAsm"].astype(str).str.lower().str.split().str[0]
     frame["is_load"] = frame["opcode"].str.startswith("ld") | frame["opcode"].str.startswith("c_ld")
-    frame["execute_inner_gap"] = (frame["AtBypassVal"] - frame["AtFU"]) / period
-    frame["commit_inter_gap"] = frame["AtCommit"].diff() / period
+    frame["load_execution_latency"] = (frame["AtBypassVal"] - frame["AtFU"]) / period
     frame = frame[frame["is_load"]].copy()
     frame = frame[
         (frame["AtFU"] > 0)
         & (frame["AtBypassVal"] >= frame["AtFU"])
-        & (frame["commit_inter_gap"].notna())
-        & (frame["commit_inter_gap"] >= 0)
     ]
-    return frame[["ID", "PC", "DisAsm", "execute_inner_gap", "commit_inter_gap"]]
+    return frame[["ID", "PC", "DisAsm", "load_execution_latency"]]
 
 
 def plot_load_gap_comparison(
@@ -589,10 +586,10 @@ def plot_load_gap_comparison(
     start_pc: int,
     end_pc: int,
     period: int = 333,
-    pc_count: int = 4,
+    pc_count: int = 8,
 ) -> tuple[plt.Figure, pd.DataFrame]:
-    """Compare only load execute inner-gap and commit inter-gap."""
-    first_name, first_db = next(iter(databases.items()))
+    """Compare load execution latency across configurations."""
+    _, first_db = next(iter(databases.items()))
     first_samples = load_gap_frame(first_db, start_pc, end_pc, period)
     hot = (
         first_samples.groupby(["PC", "DisAsm"], as_index=False)
@@ -608,8 +605,7 @@ def plot_load_gap_comparison(
             samples[samples["PC"].isin(selected)]
             .groupby(["PC", "DisAsm"], as_index=False)
             .agg(
-                execute_inner_gap=("execute_inner_gap", "mean"),
-                commit_inter_gap=("commit_inter_gap", "mean"),
+                load_execution_latency=("load_execution_latency", "mean"),
                 samples=("ID", "count"),
             )
         )
@@ -624,38 +620,35 @@ def plot_load_gap_comparison(
     ]
     x = np.arange(len(selected))
     width = 0.8 / max(1, len(databases))
-    fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.8), constrained_layout=True)
+    fig, axis = plt.subplots(figsize=(12.5, 4.8), constrained_layout=True)
     palette = ["#5f6368", "#1a73e8", "#e8710a", "#188038"]
-    for axis, metric, title in zip(
-        axes,
-        ["execute_inner_gap", "commit_inter_gap"],
-        ["Load execute inner-gap", "Load commit inter-gap"],
-    ):
-        for index, (configuration, _) in enumerate(databases.items()):
-            subset = result[result["configuration"] == configuration].set_index("PC")
-            values = [
-                subset.at[int(pc), metric] if int(pc) in subset.index else np.nan
-                for pc in selected
-            ]
-            offset = (index - (len(databases) - 1) / 2) * width
-            bars = axis.bar(
-                x + offset,
-                values,
-                width=width,
-                label=configuration,
-                color=palette[index],
-            )
-            value_labels = [
-                f"{value:.1f}" if np.isfinite(value) and value >= 0.05 else ""
-                for value in values
-            ]
-            axis.bar_label(bars, labels=value_labels, padding=2, fontsize=8)
-        axis.set_title(title)
-        axis.set_ylabel("Cycles")
-        axis.set_xticks(x, labels=labels)
-        axis.grid(axis="y", alpha=0.2)
-        axis.spines[["top", "right"]].set_visible(False)
-    handles, legend_labels = axes[0].get_legend_handles_labels()
+    for index, (configuration, _) in enumerate(databases.items()):
+        subset = result[result["configuration"] == configuration].set_index("PC")
+        values = [
+            subset.at[int(pc), "load_execution_latency"]
+            if int(pc) in subset.index
+            else np.nan
+            for pc in selected
+        ]
+        offset = (index - (len(databases) - 1) / 2) * width
+        bars = axis.bar(
+            x + offset,
+            values,
+            width=width,
+            label=configuration,
+            color=palette[index],
+        )
+        value_labels = [
+            f"{value:.1f}" if np.isfinite(value) and value >= 0.05 else ""
+            for value in values
+        ]
+        axis.bar_label(bars, labels=value_labels, padding=2, fontsize=8)
+    axis.set_title("Load execution latency")
+    axis.set_ylabel("Cycles")
+    axis.set_xticks(x, labels=labels)
+    axis.grid(axis="y", alpha=0.2)
+    axis.spines[["top", "right"]].set_visible(False)
+    handles, legend_labels = axis.get_legend_handles_labels()
     fig.legend(
         handles,
         legend_labels,
